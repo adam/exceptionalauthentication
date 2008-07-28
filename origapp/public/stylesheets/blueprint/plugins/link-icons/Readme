@@ -1,0 +1,19 @@
+Link Icons
+* Icons for links based on protocol or file type.
+
+This is not supported in IE versions < 7.
+
+
+Credits
+----------------------------------------------------------------
+
+* Marc Morgan
+* Olav Bjorkoy  [bjorkoy.com]
+
+
+Usage
+----------------------------------------------------------------
+
+1) Add this plugin to lib/settings.yml.
+   See compress.rb for instructions.
+	 

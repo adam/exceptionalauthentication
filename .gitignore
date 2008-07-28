@@ -1,0 +1,11 @@
+log
+private
+REVISION
+index
+public/graphics_images
+public/images/thumbnails
+public/previews
+public/system
+tmp
+._*
+.DS_Store

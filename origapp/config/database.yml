@@ -1,0 +1,16 @@
+---
+# This is a sample database file for the Sequel ORM
+:development: &defaults
+  :adapter: postgres
+  :database: ticketer_development
+  :username: postgres
+  :password: 
+  :host: localhost
+
+# :production:
+#   <<: *defaults
+#   :database: ticketer_production
+#   :username: postgres
+#   :password: 
+#   :host: 
+# 

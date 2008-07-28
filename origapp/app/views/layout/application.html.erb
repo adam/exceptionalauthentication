@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head>
+  <title><%= catch_content :for_title || 'Ticketer'-%></title>
+  <%= css_include_tag "blueprint/screen", 'blueprint/plugins/buttons/screen' -%>
+  <%= css_include_tag "site" -%>
+</head>
+<body class="container">
+  <div id="main" class="span-24 showgrid">
+    <div id="main-content" class="span-21">
+      <div id="header">
+        <h3><%= catch_content :for_header -%></h3>
+      </div> <!-- close:  -->
+      <%= catch_content :for_layout -%>
+    </div> <!-- close:  -->
+    <div id="side-content" class="span-2 last">
+      <ul id="nav">
+        <li class="span-2"><%= link_to 'Projects', '/', :class => 'button' -%></li>
+        <li class="span-2"><%= link_to 'Projects', '/', :class => 'button' -%></li>
+        <li class="span-2"><%= link_to 'Projects', '/', :class => 'button' -%></li>
+        <li class="span-2"><%= link_to 'Projects', '/', :class => 'button' -%></li>
+        <li class="span-2"><%= link_to 'Projects', '/', :class => 'button' -%></li>
+        <li class="span-2"><%= link_to 'Projects', '/', :class => 'button' -%></li>
+      </ul>
+      <%= catch_content :for_side -%>
+    </div> <!-- close:  -->
+    <div id="footer" class="span-24">
+      <%= catch_content :for_footer -%>
+    </div> <!-- close: footer -->
+  </div> <!-- close: main -->
+</body>
+</html>

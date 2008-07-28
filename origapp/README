@@ -1,0 +1,42 @@
+= Summary
+
+This very simple application does literally nothing...  except demonstrate a
+stupidly simple way to authenticate users in a Merb application.  It uses the
+Merb Exceptions mechanism to raise Unauthorized when a user is not logged in,
+and through the Exceptions controller, log them in.
+
+It also demonstrates storing the authenticated-ness of a user via a mix-in to
+the Session object, rather than an @var of the Application controller.
+Session, after all, is there to add state to HTTP....
+
+= How it happens
+
+There's a couple of things going on:
+
+1) The Application controller has a before filter that asks the session if its
+logged in, and raises Unauthenticated (a custom merb exception) if it doesn't
+
+  before :logged_in?  
+  protected 
+  def logged_in?
+    raise(Unauthenticated, 'Please Log In') unless session.authenticated?
+  end
+
+2) The Session object has a mixin declared which add in authentication-related
+methods.  Look in lib/auth_session.rb for the full mixin, and init.rb for how
+I'm extending Merb::DataMapperSession.
+
+3) The Exceptions controller catches when Unauthenticated is thrown and
+redirects to the login url (/sessions/edit).  Authentication still occurs in
+the Sessions controller, but all it does is update the session with the
+user_id if they pass authentication.
+
+= Gotchas
+
+So the HTTP 1.1 standard doesn't understand the difference between
+AuthORIZATION and AuthENTICATION, which is why we decided to add in a new type
+of Exception to handle when AuthENTICATION fails...seems weird to throw an
+Unauthorized when there wasn't an authORIZATION error but an authENTICATION
+error.  401, as it stands, confuses the terminology, but throwing a 403
+Forbidden is supposed to tell the client not to issue the request
+again...which is too permanent for an actual authORIZATION error.
