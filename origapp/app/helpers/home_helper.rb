@@ -1,5 +1,5 @@
 module Merb
-  module ProjectsHelper
+  module HomeHelper
 
   end
 end # Merb

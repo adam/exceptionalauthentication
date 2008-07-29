@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html>
 <head>
-  <title><%= catch_content :for_title || 'Ticketer'-%></title>
+  <title>Exceptional Authentication</title>
   <%= css_include_tag "blueprint/screen", 'blueprint/plugins/buttons/screen' -%>
   <%= css_include_tag "site" -%>
 </head>
@@ -15,17 +15,17 @@
     </div> <!-- close:  -->
     <div id="side-content" class="span-2 last">
       <ul id="nav">
-        <li class="span-2"><%= link_to 'Projects', '/', :class => 'button' -%></li>
-        <li class="span-2"><%= link_to 'Projects', '/', :class => 'button' -%></li>
-        <li class="span-2"><%= link_to 'Projects', '/', :class => 'button' -%></li>
-        <li class="span-2"><%= link_to 'Projects', '/', :class => 'button' -%></li>
-        <li class="span-2"><%= link_to 'Projects', '/', :class => 'button' -%></li>
-        <li class="span-2"><%= link_to 'Projects', '/', :class => 'button' -%></li>
+        <li class="span-2">
+          <% if session.authenticated? -%>
+            <%= link_to 'Logout', url(:logout), :class => 'button' -%>
+          <% else -%>
+            <%= link_to 'Login', url(:login), :class => 'button' -%>
+          <% end -%>
+        </li>
       </ul>
-      <%= catch_content :for_side -%>
     </div> <!-- close:  -->
     <div id="footer" class="span-24">
-      <%= catch_content :for_footer -%>
+      <p class="small">ExceptionalAuthentication Demonstration</p>
     </div> <!-- close: footer -->
   </div> <!-- close: main -->
 </body>

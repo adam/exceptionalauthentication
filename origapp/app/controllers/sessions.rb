@@ -1,22 +1,18 @@
 class Sessions < Application
 
-  skip_before :logged_in?
+  skip_before :ensure_authentication
 
   def update(login, password)
     if session.authenticate(login, password)
-      redirect url(:projects)
+      redirect url(:home)
     else
       raise Unauthenticated, 'Authentication Failed. Please Try Again'
     end
   end
   
-  def edit
-    render
-  end
-  
   def destroy
     session.abandon!
-    raise Unauthenticated
+    raise Unauthenticated, "Thank you, come again ~ Apu Nahasapeemapetilon"
   end
   
 end

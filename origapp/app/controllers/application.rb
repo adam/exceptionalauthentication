@@ -1,8 +1,10 @@
 class Application < Merb::Controller
   
-  before :logged_in?
+  before :ensure_authentication
+  
   protected
-  def logged_in?
+  def ensure_authentication
     raise(Unauthenticated, 'Please Log In') unless session.authenticated?
   end
+  
 end
