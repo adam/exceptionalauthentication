@@ -1,6 +1,10 @@
 class Sessions < Application
 
   skip_before :ensure_authentication
+  
+  def edit
+    render
+  end
 
   def update(login, password)
     if session.authenticate(login, password)

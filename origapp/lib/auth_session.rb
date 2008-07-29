@@ -17,6 +17,20 @@ module Authentication
     def user
       @user ||= self[:user_id].blank? ? nil : User.get(self[:user_id])
     end
+    
+    ## 
+    # allows for manually setting the user
+    # @returns [User, NilClass]
+    def user=(user)
+      case user
+      when User
+        self[:user_id] = user.id
+        @user = user
+      else
+        abandon!
+      end
+      @user
+    end
 
     ##
     # retrieve the claimed identity and verify the claim
@@ -39,16 +53,9 @@ module Authentication
     # 
     def abandon!
       @user = nil
-      self.data = {}
-      self.save
+      delete
       self
     end
     
-    private
-    
-    def user=(user)
-      self[:user_id] = user.id
-      @user = user
-    end
   end
 end

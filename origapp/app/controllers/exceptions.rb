@@ -3,8 +3,6 @@
 # so to help ourselves out, we create a custom exception which
 # helps keep semantics clear
 # 
-class Unauthenticated < Merb::ControllerExceptions::Unauthorized; end
-
 class Exceptions < Application
   
   skip_before :ensure_authentication
@@ -15,12 +13,12 @@ class Exceptions < Application
   end
 
   def unauthorized
-    render :format => :html
+    redirect url(:login)
   end
 
   # login page
   def unauthenticated
-    render :format => :html
+    redirect url(:login)
   end
 
   def not_acceptable

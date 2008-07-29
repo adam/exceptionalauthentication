@@ -4,4 +4,5 @@ Merb::Config.use { |c|
   c[:reload_classes] = false
   c[:log_level] = :error
   c[:log_file] = Merb.log_path + "/production.log"
+  c[:session_store] = 'datamapper'
 }

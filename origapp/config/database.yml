@@ -2,3 +2,6 @@
 :development: &defaults
   :adapter: sqlite3
   :database: ':memory:'
+:test: &defaults
+  :adapter: sqlite3
+  :database: ':memory:'
