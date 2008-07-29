@@ -99,7 +99,6 @@ module Authentication
           next unless block
           user = controller.instance_eval(&block)
         end
-
         # need to put the post authenticated tests here for things like 
         # activated, forgotten passwords etc        
         self.user = user
