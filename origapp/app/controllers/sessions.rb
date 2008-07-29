@@ -7,8 +7,8 @@ class Sessions < Application
   end
 
   def update(login, password)
-    if session.authenticate(login, password)
-      redirect url(:home)
+    if session.authenticate(self)
+      redirect url(:home), "Authenticated Successfully"
     else
       raise Unauthenticated, 'Authentication Failed. Please Try Again'
     end
@@ -16,7 +16,7 @@ class Sessions < Application
   
   def destroy
     session.abandon!
-    raise Unauthenticated, "Thank you, come again ~ Apu Nahasapeemapetilon"
+    raise Unauthenticated, "Thank you, come again - Apu Nahasapeemapetilon"
   end
   
 end
