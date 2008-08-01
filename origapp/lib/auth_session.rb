@@ -8,24 +8,28 @@ module Authentication
   
   class StrategyContainer    
     attr_reader :order, :strategies
+    include Enumerable
     
     def initialize
       @order = []
       @strategies = {}
     end
     
+    # Add a new strategy with the given name
     def add(label, options = {}, &blk)
       raise DuplicateStrategy, "The #{label} strategy is already defined in this list" unless strategies[label].nil?
       strategies[label] = blk
       order << label
     end
     
+    # Removed the specified strategy
     def remove(label)
       raise MissingStrategy, "The #{label} strategy does not exist" if strategies[label].nil?
       order.delete(label)
       strategies.delete(label)
     end
     
+    # Allows you to change the order of the execution of the strategies
     def order=(new_order)
       raise ArgumentError, "Pass an Array to StrategyContainer#order=" unless new_order.kind_of?(Array)
       raise MissingStrategy, "The strategy does not exist" unless (new_order - strategies.keys).empty?
@@ -33,6 +37,7 @@ module Authentication
       @order = new_order
     end
     
+    # Clear all strategies
     def clear!
       @order = []
       @strategies = {}
@@ -52,6 +57,10 @@ module Authentication
   
   @@login_strategies = Hash.new{|h,k| h[k] = StrategyContainer.new }
 
+  # Gets the active strategy containers.  By defualt there are 
+  # :pre_find  - executes all strategies prior to looking for a  user model
+  # :find      - executes to find the user model.  The block should return a user object or nil
+  # :post_find - executes after the finder to confirm that a user is allowed.   
   def self.login_strategies(phase)
     @@login_strategies[phase]
   end
@@ -93,25 +102,35 @@ module Authentication
       ##
       # retrieve the claimed identity and verify the claim
       # 
-      # Uses the strategies setup on Authentication executed in the context of the controller to see if it can find
-      # a user object
-      # @return [User, NilClass] the verified user, or nil if verification failed
-      # @see User::encrypt
+      # Uses strategies to find and confirm that a user is valid.  A user could be anything, and you should setup the store_user, and fetch_user
+      # to set what you consider a "User" object.  
       # 
+      # There are 3 strategy groups that are run for authenticate.  
+      # 
+      # 1. :pre_find - These are run concecutively with no tests for completion.  These are for setup only
+      # 2. :find     - This group is where the user model is found.  The strategy should return a user object if it finds one.  Otherwise it should
+      #                return nil or false.  The first strategy whose results evaluate to not nil/false will be set as the user object.  This
+      #                is executed in the context of the controller.
+      # 3. :post_find - This group is where confirmation is completed on the user model.  For example.  Is the user active? Have they had too many login attempts etc
+      #                 To allow the user to proceed, return the user.  To halt the user, return nil or false.  Each of these strategies will be yielded the user object and the
+      #                 controller object
+      #
+      # See Authentication::StrategyContainer for more methods
       def authenticate(controller)
         user = nil
         # Runs the pre finder strategies
-        Authentication.login_strategies(:pre_find).each{|s| yield s}
+        Authentication.login_strategies(:pre_find).each{|s| s.call }
         
         # This one should find the first one that matches.  It should not run antother
         Authentication.login_strategies(:find).detect do |s|
           user = controller.instance_eval(&s)
         end
-        raise Unauthenticated unless user
+        raise Merb::Controller::Unauthenticated unless user
         
         # Runs any post find processing.  e.g. check for an active user, check for forgotten passwords etc.
-        user = Authentication.login_strategies(:post_find).inject(user){|s| u = s.call(user, controller); u}   
-        raise Unauthenticated unless user
+        # Stops after the first time a user is not found after the strategy is run
+        user = Authentication.login_strategies(:post_find).inject(user){|user, s| u = s.call(user, controller); break unless u; u}   
+        raise Merb::Controller::Unauthenticated unless user
         self.user = user
       end
 

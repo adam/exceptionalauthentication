@@ -13,13 +13,12 @@ class Exceptions < Application
   end
 
   def unauthorized
-    redirect url(:login)
+    render :format => :html
   end
 
   # login page
   def unauthenticated
-    puts params[:exception].message
-    redirect url(:login), params[:exception].message
+    render :format => :html
   end
 
   def not_acceptable

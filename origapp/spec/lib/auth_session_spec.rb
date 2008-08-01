@@ -155,33 +155,73 @@ describe Authentication::Session do
     end
   end
 
-  # describe "authenticate" do
-  #   before(:each) do
-  #     @controller = Application.new(Merb::Request.new({}))
-  #     @controller.setup_session
-  #     @controller.params[:login] = "fred"
-  #     @controller.params[:password] = "sekrit"
-  #     Authentication.login_strategies(:find).add(:salted_login)
-  #     
-  #   end
-  #   
-  #   it "should detect the first user that is not nil" do
-  #     @strategies.should_receive(:detect)
-  #     @controller.session.authenticate(@controller)
-  #   end
-  #   
-  #   it "should execute it in the controller context" do
-  #     block = Authentication.login_strategies[:salted_login]
-  #     @controller.should_receive(:instance_eval)
-  #     @controller.should_receive(:params).any_number_of_times.and_return({:login => "fred", :password => "sekrit"})
-  #     @controller.session.authenticate(@controller)
-  #   end
-  #   
-  #   it "shoudl not authenticate for a user that does not exist" do
-  #     User.first(:login => "fred").should be_nil
-  #     @controller.session.authenticate(@controller).should be_nil
-  #   end
-  #   
-  # end
+  describe "authenticate" do
+    
+    class AController < Merb::Controller; end
+    
+    before(:each) do
+      @user = mock("user")
+      Authentication.login_strategies(:pre_find).clear!
+      Authentication.login_strategies(:find).clear!
+      Authentication.login_strategies(:post_find).clear!
+      Authentication.login_strategies(:find).add(:mock){"USER"}
+      
+      @controller = AController.new(Merb::Request.new({}))
+      @strategies = mock("strategies")
+      @strategies.stub!(:each).and_return([])
+      
+      @session.stub!(:store_user).and_return(42)
+      @session.stub!(:fetch_user).and_return(@user)
+    end
+    
+    it "should call the pre_find strategies" do
+      pre_mock = mock("pre_find")
+      pre_mock.should_receive(:pre_find)
+      Authentication.login_strategies(:pre_find).add(:pre_mock){pre_mock.pre_find;}
+      @session.authenticate(@controller)
+    end
+    
+    it "should call the find strategies" do
+      @session.should_receive(:store_user).with("USER").and_return("USER")
+      @session.authenticate(@controller)
+    end
+    
+    it "should call the post_find strategies" do
+      post_mock = mock("post_mock")
+      @controller.should_receive(:post_mock_controller)
+      Authentication.login_strategies(:post_find).add(:post_mock) do |user, controller|
+        controller.post_mock_controller
+        user.should == "USER"
+        "USER"
+      end
+      @session.authenticate(@controller)
+    end
+    
+    it "should stop calling the post_find strategies if the user is nil" do
+      post_mock = mock("post_mock")
+      @controller.should_receive(:post_mock_controller)
+      @controller.should_not_receive(:post_mock2)
+      Authentication.login_strategies(:post_find).add(:post_mock){|u,c| c.post_mock_controller; nil}
+      Authentication.login_strategies(:post_find).add(:post_mock2){|u,c| c.post_mock2; "USER"}
+      lambda do
+        @session.authenticate(@controller)
+      end.should raise_error(Merb::Controller::Unauthenticated)
+    end
+    
+    it "should raise an unauthenticated error if there is no user found" do
+      Authentication.login_strategies(:find).clear!
+      Authentication.login_strategies(:find).add(:mock){nil}
+      lambda do
+        @session.authenticate(@controller)
+      end.should raise_error(Merb::Controller::Unauthenticated)
+    end
+    
+    it "should raise an unauthenticated error if the post finder returns nil" do
+      Authentication.login_strategies(:post_find).add(:post_mock){nil}
+      lambda do
+        @session.authenticate(@controller)
+      end.should raise_error(Merb::Controller::Unauthenticated)
+    end
+  end
 
 end
