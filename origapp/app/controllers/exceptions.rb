@@ -18,7 +18,8 @@ class Exceptions < Application
 
   # login page
   def unauthenticated
-    redirect url(:login), params[:exception].message
+    msg = params[:exception] ? params[:exception].message : 'Please Log In'
+    redirect url(:login), :message => msg
   end
 
   def not_acceptable

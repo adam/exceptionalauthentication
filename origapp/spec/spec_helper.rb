@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'merb-core'
+require 'merb-core/dispatch/session/cookie'
 require 'spec' # Satisfies Autotest and anyone else not using the Rake tasks
 
 # this loads all plugins required in your init file so don't add them

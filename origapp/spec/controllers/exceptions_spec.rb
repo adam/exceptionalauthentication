@@ -11,7 +11,9 @@ describe Exceptions do
   
   describe "unauthenticated" do  
     it "should redirect to :login" do
-      dispatch(:unauthenticated).should redirect_to(url(:login))
+      dispatch(
+        :unauthenticated, Merb::Controller::Unauthenticated.new('Please Log In')
+      ).should redirect_to(url(:login))
     end
   end
   

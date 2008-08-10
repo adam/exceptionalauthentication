@@ -8,7 +8,7 @@ class Sessions < Application
 
   def update(login, password)
     if session.authenticate(self)
-      redirect url(:home), "Authenticated Successfully"
+      redirect url(:home), :message => "Authenticated Successfully"
     else
       raise Unauthenticated, 'Authentication Failed. Please Try Again'
     end
