@@ -16,10 +16,10 @@ There's a couple of things going on:
 1) The Application controller has a before filter that asks the session if its
 logged in, and raises Unauthenticated (a custom merb exception) if it doesn't
 
-  before :logged_in?  
-  protected 
-  def logged_in?
-    raise(Unauthenticated, 'Please Log In') unless session.authenticated?
+  before :ensure_authentication
+  # in helpers/authentication_helper.rb
+  def ensure_authentication
+    raise(Merb::Controller::Unauthenticated, 'Please Log In') unless session.authenticated?
   end
 
 2) The Session object has a mixin declared which add in authentication-related

@@ -143,11 +143,6 @@ describe Authentication::Session do
       @session.user
     end
     
-    it "should delete the session" do
-      @session.should_receive(:delete)
-      @session.abandon!
-    end
-    
     it "should not have a user after it is abandoned" do
       @session.user.should == @user
       @session.abandon!

@@ -121,11 +121,11 @@ module Authentication
         # Runs the pre finder strategies
         Authentication.login_strategies(:pre_find).each{|s| s.call }
         
-        # This one should find the first one that matches.  It should not run antother
+        # This one should find the first one that matches.  It should not run another
         Authentication.login_strategies(:find).detect do |s|
           user = controller.instance_eval(&s)
         end
-        raise Merb::Controller::Unauthenticated unless user
+        # raise Merb::Controller::Unauthenticated unless user
         
         # Runs any post find processing.  e.g. check for an active user, check for forgotten passwords etc.
         # Stops after the first time a user is not found after the strategy is run
@@ -139,7 +139,7 @@ module Authentication
       # 
       def abandon!
         @user = nil
-        delete
+        self[:user] = nil
         self
       end
       
