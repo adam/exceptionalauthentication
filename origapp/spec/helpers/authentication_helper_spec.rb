@@ -23,7 +23,6 @@ describe Merb::AuthenticationHelper do
     @controller = ControllerMock.new(Merb::Request.new({}))
     @controller.setup_session
     lambda do
-      puts @controller.session.inspect
       @controller.send(:ensure_authentication)
     end.should raise_error(Merb::Controller::Unauthenticated)
   end
