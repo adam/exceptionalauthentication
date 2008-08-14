@@ -1,7 +1,7 @@
 <h3>Login</h3>
 
-<% if message && !message.blank? -%>
-  <p class="error"><%= message -%></p>
+<% if params[:exception] && params[:exception].message && !params[:exception].message.blank? -%>
+  <p class="error"><%= params[:exception].message -%></p>
 <% end -%>
 
 <form action="/sessions/update" method="POST" accept-charset="utf-8">

@@ -1,17 +1,17 @@
 class Sessions < Application
 
-  skip_before :ensure_authentication
+  skip_before :ensure_authenticated
   
-  def edit
-    render
+  after :update do
+    # redirect from an after filter for max flexibility
+    # We can then put it into a slice and ppl can easily 
+    # customize the action
+    redirect url(:home), :message => "Authenticated Successfully"
   end
 
   def update(login, password)
-    if session.authenticate(self)
-      redirect url(:home), :message => "Authenticated Successfully"
-    else
-      raise Unauthenticated, 'Authentication Failed. Please Try Again'
-    end
+    session.authenticate(self)
+    "Add an after filter to #{controller.class.name} to redirect after login"
   end
   
   def destroy

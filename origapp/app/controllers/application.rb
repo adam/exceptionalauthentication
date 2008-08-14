@@ -1,5 +1,5 @@
 class Application < Merb::Controller
   
-  before :ensure_authentication
+  before :ensure_authenticated
   
 end

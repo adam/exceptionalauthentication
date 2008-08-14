@@ -5,7 +5,7 @@
 # 
 class Exceptions < Application
   
-  skip_before :ensure_authentication
+  skip_before :ensure_authenticated
   
   # handle NotFound exceptions (404)
   def not_found
@@ -19,8 +19,7 @@ class Exceptions < Application
   # login page
   def unauthenticated
     session.abandon!
-    msg = params[:exception] ? params[:exception].message : 'Please Log In'
-    redirect url(:login), :message => msg
+    display({}) # display the form for html... report that the user isn't logged in otherwise
   end
 
   def not_acceptable

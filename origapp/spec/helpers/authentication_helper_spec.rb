@@ -15,7 +15,7 @@ describe Merb::AuthenticationHelper do
   
   it "should not raise and Unauthenticated error" do
     lambda do
-      @controller.send(:ensure_authentication)
+      @controller.send(:ensure_authenticated)
     end.should_not raise_error(Merb::Controller::Unauthenticated)
   end
   
@@ -23,7 +23,7 @@ describe Merb::AuthenticationHelper do
     @controller = ControllerMock.new(Merb::Request.new({}))
     @controller.setup_session
     lambda do
-      @controller.send(:ensure_authentication)
+      @controller.send(:ensure_authenticated)
     end.should raise_error(Merb::Controller::Unauthenticated)
   end
   
