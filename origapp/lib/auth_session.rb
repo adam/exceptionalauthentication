@@ -97,7 +97,7 @@ module Authentication
     # @see User::encrypt
     # 
     def authenticate(controller, opts = {})
-      msg = opts.delete(:message) || "Could not log in"
+      msg = opts.delete(:message) || "Could Not Log In"
       user = nil    
       # This one should find the first one that matches.  It should not run antother
       Authentication.login_strategies(:find).detect do |s|
