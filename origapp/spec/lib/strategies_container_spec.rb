@@ -157,4 +157,24 @@ describe Authentication::StrategyContainer do
     end
   end
   
+  describe "clear!" do
+    before(:each) do
+      @s.add(:one){@mock.one}
+      @s.add(:two){@mock.two}
+      @s.add(:three){@mock.three}
+      @s.add(:four){@mock.four}
+      @s.add(:five){@mock.five}
+    end
+    
+    it "should clear the strategies" do
+      @s.clear!
+      @s.strategies.should be_empty
+    end
+    
+    it "should clear the order" do
+      @s.clear!
+      @s.order.should be_empty
+    end
+  end
+  
 end

@@ -4,6 +4,7 @@
 module Authentication
   class DuplicateStrategy < Exception; end
   class MissingStrategy < Exception; end
+  class NotImplemented < Exception; end
   
   class StrategyContainer    
     attr_reader :order, :strategies
@@ -32,6 +33,11 @@ module Authentication
       @order = new_order
     end
     
+    def clear!
+      @order = []
+      @strategies = {}
+    end
+    
     def [](key)
       strategies[key]
     end
@@ -44,47 +50,10 @@ module Authentication
   end
   
   
-  @@login_strategies = {}
-  @@active_login_strategies = []
-  
-  def self.reset_strategies_to_default!
-    login_strategies.clear
-    active_login_strategies.clear
-    
-    add_login_strategy(:salted_login) do 
-      user = User.first(:login => params[:login])
-      if user && user.crypted_password == User.encrypt(user.salt, params[:password])
-                
-        user
-      else
-        nil
-      end
-    end
-  end # reset_strategies_to_default!
-  
-  def self.add_login_strategy(label, &block)
-    login_strategies[label] = block
-    active_login_strategies << label unless active_login_strategies.include?(label)
-  end #add_login_strategy
-  
-  def self.remove_login_strategy!(label)
-    login_strategies.delete(label)
-    active_login_strategies.reject!{|s| s == label}
-  end
-  
-  def self.login_strategies
-    @@login_strategies
-  end #login_strategies
-  
-  def self.active_login_strategies
-    @@active_login_strategies
-  end
-  
-  def self.active_login_strategies=(set)
-    raise "Should be an Array like object" unless set.respond_to?(:each)
-    raise "Active Strategies should not be empty" if set.empty?
-    raise "Strategy Not Registered" unless (set - @@active_login_strategies).empty?
-    @@active_login_strategies = set
+  @@login_strategies = Hash.new{|h,k| h[k] = StrategyContainer.new }
+
+  def self.login_strategies(phase)
+    @@login_strategies[phase]
   end
   
   module Session
@@ -109,21 +78,16 @@ module Authentication
       # returns the active user for this session, or nil if there's no user claiming this session
       # @returns [User, NilClass]
       def user
-        @user ||= self[:user_id].blank? ? nil : User.get(self[:user_id])
+        return nil if !self[:user]
+        @user ||= fetch_user(self[:user])
       end
     
       ## 
       # allows for manually setting the user
       # @returns [User, NilClass]
       def user=(user)
-        case user
-        when User
-          self[:user_id] = user.id
-          @user = user
-        else
-          abandon!
-        end
-        @user
+        self[:user] = store_user(user)
+        @user = self[:user] ? user : self[:user]  
       end
 
       ##
@@ -136,13 +100,18 @@ module Authentication
       # 
       def authenticate(controller)
         user = nil
-        Authentication.active_login_strategies.detect do |strategy|
-          block = Authentication.login_strategies[strategy]
-          next unless block
-          user = controller.instance_eval(&block)
+        # Runs the pre finder strategies
+        Authentication.login_strategies(:pre_find).each{|s| yield s}
+        
+        # This one should find the first one that matches.  It should not run antother
+        Authentication.login_strategies(:find).detect do |s|
+          user = controller.instance_eval(&s)
         end
-        # need to put the post authenticated tests here for things like 
-        # activated, forgotten passwords etc        
+        raise Unauthenticated unless user
+        
+        # Runs any post find processing.  e.g. check for an active user, check for forgotten passwords etc.
+        user = Authentication.login_strategies(:post_find).inject(user){|s| u = s.call(user, controller); u}   
+        raise Unauthenticated unless user
         self.user = user
       end
 
@@ -154,9 +123,18 @@ module Authentication
         delete
         self
       end
+      
+      # Overwrite this method to store your user object in the session.  The return value of the method will be stored
+      def store_user(user)
+        raise NotImplemented
+      end
+      
+      # Overwrite this method to fetch your user from the session.  The return value of this will be stored as the user object
+      # return nil to stop login
+      def fetch_user(session_contents = self[:user])
+        raise NotImplemented
+      end
     end # InstanceMethods
     
   end # Session
-  
-  reset_strategies_to_default!
 end
