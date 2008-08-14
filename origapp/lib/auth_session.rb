@@ -7,6 +7,7 @@ module Authentication
   class NotImplemented < Exception; end
   
   class StrategyContainer    
+    include Enumerable
     attr_reader :order, :strategies
     
     def initialize
@@ -68,7 +69,7 @@ module Authentication
     # @return [TrueClass, FalseClass]
     # 
     def authenticated?
-      !user.nil?
+      !!user
     end
     
     ##
@@ -101,7 +102,7 @@ module Authentication
       Authentication.login_strategies(:find).detect do |s|
         user = controller.instance_eval(&s)
       end
-      raise Unauthenticated unless user
+      raise Merb::Controller::Unauthenticated unless user
       self.user = user
     end
     
@@ -148,6 +149,10 @@ module Authentication
     module InstanceMethods
       def authenticated?
         _authentication_manager.authenticated?
+      end
+      
+      def authenticate(controller)
+        _authentication_manager.authenticate(controller)
       end
       
       def user

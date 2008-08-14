@@ -5,7 +5,7 @@ module Merb
     protected
     # Check to see if a user is logged in
     def ensure_authentication
-      raise(Merb::Controller::Unauthenticated, 'Please Log In') unless session.authenticated?
+      session.authenticate(self)
     end 
   end
 end
