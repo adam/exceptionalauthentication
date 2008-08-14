@@ -56,84 +56,119 @@ module Authentication
     @@login_strategies[phase]
   end
   
+  class Manager
+    include Extlib::Hook
+    attr_accessor :session
+    
+    def initialize(session)
+      @session = session
+    end
+    
+    ##
+    # @return [TrueClass, FalseClass]
+    # 
+    def authenticated?
+      !user.nil?
+    end
+    
+    ##
+    # returns the active user for this session, or nil if there's no user claiming this session
+    # @returns [User, NilClass]
+    def user
+      return nil if !session[:user]
+      @user ||= fetch_user(session[:user])
+    end
+    
+    ## 
+    # allows for manually setting the user
+    # @returns [User, NilClass]
+    def user=(user)
+      session[:user] = store_user(user)
+      @user = session[:user] ? user : session[:user]  
+    end
+    
+    ##
+    # retrieve the claimed identity and verify the claim
+    # 
+    # Uses the strategies setup on Authentication executed in the context of the controller to see if it can find
+    # a user object
+    # @return [User, NilClass] the verified user, or nil if verification failed
+    # @see User::encrypt
+    # 
+    def authenticate(controller)
+      user = nil
+      # Runs the pre finder strategies
+      Authentication.login_strategies(:pre_find).each{|s| yield s}
+      
+      # This one should find the first one that matches.  It should not run antother
+      Authentication.login_strategies(:find).detect do |s|
+        user = controller.instance_eval(&s)
+      end
+      raise Unauthenticated unless user
+      
+      # Runs any post find processing.  e.g. check for an active user, check for forgotten passwords etc.
+      user = Authentication.login_strategies(:post_find).inject(user){|s| u = s.call(user, controller); u}   
+      raise Unauthenticated unless user
+      self.user = user
+    end
+    
+    ##
+    # abandon the session, log out the user, and empty everything out
+    # 
+    def abandon!
+      @user = nil
+      session.delete
+    end
+    
+    # Overwrite this method to store your user object in the session.  The return value of the method will be stored
+    def store_user(user)
+      raise NotImplemented
+    end
+    
+    # Overwrite this method to fetch your user from the session.  The return value of this will be stored as the user object
+    # return nil to stop login
+    def fetch_user(session_contents = session[:user])
+      raise NotImplemented
+    end
+    
+  end
+  
   module Session
     
     def self.included(base)
       base.send(:include, InstanceMethods)
       base.send(:extend,  ClassMethods)
+      base.class_eval do
+        include Extlib::Hook
+        attr_accessor :_authentication_manager
+        
+        after_class_method :new do |instance, *args|
+          instance._authentication_manager = Authentication::Manager.new(instance)
+        end
+      end
+      
     end
     
     module ClassMethods    
     end # ClassMethods
     
     module InstanceMethods
-      ##
-      # @return [TrueClass, FalseClass]
-      # 
       def authenticated?
-        !user.nil?
+        _authentication_manager.authenticated?
       end
-
-      ##
-      # returns the active user for this session, or nil if there's no user claiming this session
-      # @returns [User, NilClass]
+      
       def user
-        return nil if !self[:user]
-        @user ||= fetch_user(self[:user])
+        _authentication_manager.user
       end
-    
-      ## 
-      # allows for manually setting the user
-      # @returns [User, NilClass]
-      def user=(user)
-        self[:user] = store_user(user)
-        @user = self[:user] ? user : self[:user]  
+      
+      def user=(the_user)
+        _authentication_manager.user = the_user
       end
-
-      ##
-      # retrieve the claimed identity and verify the claim
-      # 
-      # Uses the strategies setup on Authentication executed in the context of the controller to see if it can find
-      # a user object
-      # @return [User, NilClass] the verified user, or nil if verification failed
-      # @see User::encrypt
-      # 
-      def authenticate(controller)
-        user = nil
-        # Runs the pre finder strategies
-        Authentication.login_strategies(:pre_find).each{|s| yield s}
-        
-        # This one should find the first one that matches.  It should not run antother
-        Authentication.login_strategies(:find).detect do |s|
-          user = controller.instance_eval(&s)
-        end
-        raise Unauthenticated unless user
-        
-        # Runs any post find processing.  e.g. check for an active user, check for forgotten passwords etc.
-        user = Authentication.login_strategies(:post_find).inject(user){|s| u = s.call(user, controller); u}   
-        raise Unauthenticated unless user
-        self.user = user
-      end
-
-      ##
-      # abandon the session, log out the user, and empty everything out
-      # 
+      
       def abandon!
-        @user = nil
-        delete
-        self
+        _authentication_manager.abandon!
       end
       
-      # Overwrite this method to store your user object in the session.  The return value of the method will be stored
-      def store_user(user)
-        raise NotImplemented
-      end
-      
-      # Overwrite this method to fetch your user from the session.  The return value of this will be stored as the user object
-      # return nil to stop login
-      def fetch_user(session_contents = self[:user])
-        raise NotImplemented
-      end
     end # InstanceMethods
     
   end # Session

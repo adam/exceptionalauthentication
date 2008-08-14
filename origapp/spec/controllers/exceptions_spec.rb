@@ -17,13 +17,7 @@ describe Exceptions do
   
   describe "unauthenticated" do  
     it "should redirect to :login" do
-<<<<<<< HEAD:origapp/spec/controllers/exceptions_spec.rb
-      dispatch(
-        :unauthenticated, Merb::Controller::Unauthenticated.new('Please Log In')
-      ).should redirect_to(url(:login))
-=======
       dispatch(:unauthenticated).should redirect
->>>>>>> Adds fetch_user and store_user abstractions:origapp/spec/controllers/exceptions_spec.rb
     end
   end
   
