@@ -11,13 +11,19 @@ describe Exceptions do
     options[:exception] ||= exp
     dispatch_to(Exceptions, action, options, env) do |c|
       c.stub!(:params).and_return(options)
-      yield if block_given?
+      yield c if block_given?
     end
   end
   
   describe "unauthenticated" do  
     it "should redirect to :login" do
       dispatch(:unauthenticated).should redirect
+    end
+    
+    it "should abandon the session" do
+      @session = mock("session", :null_object => true)
+      @session.should_receive(:abandon!)
+      dispatch(:unauthenticated){|c| c.stub!(:session).and_return(@session) }
     end
   end
   

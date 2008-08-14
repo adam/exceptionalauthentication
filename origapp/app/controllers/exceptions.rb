@@ -18,6 +18,7 @@ class Exceptions < Application
 
   # login page
   def unauthenticated
+    session.abandon!
     msg = params[:exception] ? params[:exception].message : 'Please Log In'
     redirect url(:login), :message => msg
   end
