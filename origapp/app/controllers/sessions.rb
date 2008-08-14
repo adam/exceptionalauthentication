@@ -15,11 +15,12 @@ class Sessions < Application
 
   def update(login, password)
     session.authenticate(self)
-    "Add an after filter to #{controller.class.name} to redirect after login"
+    "Add an after filter to do stuff after login"
   end
   
   def destroy
     session.abandon!
+    "Add an after filter to do stuff after logout"
   end
   
 end
