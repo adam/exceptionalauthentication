@@ -96,13 +96,14 @@ module Authentication
     # @return [User, NilClass] the verified user, or nil if verification failed
     # @see User::encrypt
     # 
-    def authenticate(controller)
+    def authenticate(controller, opts = {})
+      msg = opts.delete(:message) || "Could not log in"
       user = nil    
       # This one should find the first one that matches.  It should not run antother
       Authentication.login_strategies(:find).detect do |s|
         user = controller.instance_eval(&s)
       end
-      raise Merb::Controller::Unauthenticated unless user
+      raise Merb::Controller::Unauthenticated, msg unless user
       self.user = user
     end
     

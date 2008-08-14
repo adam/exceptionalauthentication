@@ -16,9 +16,6 @@ describe Exceptions do
   end
   
   describe "unauthenticated" do  
-    it "should redirect to :login" do
-      dispatch(:unauthenticated).should redirect
-    end
     
     it "should abandon the session" do
       @session = mock("session", :null_object => true)
