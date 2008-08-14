@@ -96,18 +96,11 @@ module Authentication
     # @see User::encrypt
     # 
     def authenticate(controller)
-      user = nil
-      # Runs the pre finder strategies
-      Authentication.login_strategies(:pre_find).each{|s| yield s}
-      
+      user = nil    
       # This one should find the first one that matches.  It should not run antother
       Authentication.login_strategies(:find).detect do |s|
         user = controller.instance_eval(&s)
       end
-      raise Unauthenticated unless user
-      
-      # Runs any post find processing.  e.g. check for an active user, check for forgotten passwords etc.
-      user = Authentication.login_strategies(:post_find).inject(user){|s| u = s.call(user, controller); u}   
       raise Unauthenticated unless user
       self.user = user
     end

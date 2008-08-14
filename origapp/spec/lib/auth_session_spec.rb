@@ -13,9 +13,7 @@ describe Authentication::Session do
   end
 
   def clear_strategies
-    Authentication.login_strategies(:pre_find).clear!
     Authentication.login_strategies(:find).clear!
-    Authentication.login_strategies(:post_find).clear!
   end
 
   describe "module methods" do
@@ -30,27 +28,15 @@ describe Authentication::Session do
     
     describe "login_strategies" do
       it "should provide access to these strategies" do
-        [:pre_find, :find, :post_find].each do |s|
+        [:find].each do |s|
           Authentication.login_strategies(s).should be_a_kind_of(Authentication::StrategyContainer)
         end
-      end
-    
-      it "should allow adding a pre_find strategy" do
-        Authentication.login_strategies(:pre_find).add(:attempted_login){@m.attempted_login}
-        @m.should_receive(:attempted_login)
-        Authentication.login_strategies(:pre_find)[:attempted_login].call
       end
     
       it "should allow adding a find strategy" do
         Authentication.login_strategies(:find).add(:salted_login){ @m.salted_login }
         @m.should_receive(:salted_login)
         Authentication.login_strategies(:find)[:salted_login].call      
-      end
-    
-      it "should allow adding a post_find strategy" do
-        Authentication.login_strategies(:post_find).add(:active_user){ @m.active_user }
-        @m.should_receive(:active_user)
-        Authentication.login_strategies(:post_find)[:active_user].call
       end
     end # login_strategies
     
