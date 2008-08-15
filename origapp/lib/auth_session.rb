@@ -51,10 +51,10 @@ module Authentication
   end
   
   
-  @@login_strategies = Hash.new{|h,k| h[k] = StrategyContainer.new }
+  @@login_strategies = StrategyContainer.new 
 
-  def self.login_strategies(phase)
-    @@login_strategies[phase]
+  def self.login_strategies
+    @@login_strategies
   end
   
   class Manager
@@ -101,7 +101,7 @@ module Authentication
       msg = opts.delete(:message) || "Could Not Log In"
       user = nil    
       # This one should find the first one that matches.  It should not run antother
-      Authentication.login_strategies(:find).detect do |s|
+      Authentication.login_strategies.detect do |s|
         user = controller.instance_eval(&s)
       end
       raise Merb::Controller::Unauthenticated, msg unless user

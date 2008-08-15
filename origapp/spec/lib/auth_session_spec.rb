@@ -13,7 +13,7 @@ describe Authentication::Session do
   end
 
   def clear_strategies
-    Authentication.login_strategies(:find).clear!
+    Authentication.login_strategies.clear!
   end
 
   describe "module methods" do
@@ -28,15 +28,13 @@ describe Authentication::Session do
     
     describe "login_strategies" do
       it "should provide access to these strategies" do
-        [:find].each do |s|
-          Authentication.login_strategies(s).should be_a_kind_of(Authentication::StrategyContainer)
-        end
+        Authentication.login_strategies.should be_a_kind_of(Authentication::StrategyContainer)
       end
     
       it "should allow adding a find strategy" do
-        Authentication.login_strategies(:find).add(:salted_login){ @m.salted_login }
+        Authentication.login_strategies.add(:salted_login){ @m.salted_login }
         @m.should_receive(:salted_login)
-        Authentication.login_strategies(:find)[:salted_login].call      
+        Authentication.login_strategies[:salted_login].call      
       end
     end # login_strategies
     
@@ -151,7 +149,7 @@ describe Authentication::Session do
   #     @controller.setup_session
   #     @controller.params[:login] = "fred"
   #     @controller.params[:password] = "sekrit"
-  #     Authentication.login_strategies(:find).add(:salted_login)
+  #     Authentication.login_strategies.add(:salted_login)
   #     
   #   end
   #   

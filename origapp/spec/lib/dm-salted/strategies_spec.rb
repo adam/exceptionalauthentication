@@ -3,7 +3,7 @@ require 'base64'
 
 describe "Salted DM user" do
   before(:all) do
-    Authentication.login_strategies(:find).clear!
+    Authentication.login_strategies.clear!
     load File.dirname(__FILE__) / "../../../lib/plugins/dm-salted/strategies.rb"
   end
   
