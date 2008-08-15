@@ -1,8 +1,9 @@
 Merb.logger.info("Compiling routes...")
 Merb::Router.prepare do |r|
   
-  r.match("/login"  ).to(:controller => "sessions", :action  => 'edit'     ).name(:login)
   r.match("/logout").to(:controller => "sessions", :action   => 'destroy'  ).name(:logout)
+  r.match("/login", :method => :put).to(:controller => "sessions", :action => "update")
+  r.match("/login", :method => :get).to(:controller => "exceptions", :action => "unauthenticated").name(:login)
 
   r.default_routes
 

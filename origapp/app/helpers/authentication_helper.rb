@@ -5,7 +5,8 @@ module Merb
     protected
     # Check to see if a user is logged in
     def ensure_authenticated
-      session.authenticate(self)
+      session.user = session._authentication_manager.fetch_user(session[:user])
+      raise Merb::Controller::Unauthenticated unless session.user
     end 
   end
 end

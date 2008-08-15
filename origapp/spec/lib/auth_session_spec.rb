@@ -44,6 +44,7 @@ describe Authentication::Session do
       it{@session._authentication_manager.should respond_to(:store_user)}
       
       it "should raise a NotImplemented error by default" do
+        pending "This should be active in plugin form"
         lambda do
           @session._authentication_manager.store_user("THE USER")
         end.should raise_error(Authentication::NotImplemented)
@@ -54,6 +55,7 @@ describe Authentication::Session do
       it{@session._authentication_manager.should respond_to(:fetch_user)}
       
       it "should raise a NotImplemented error by defualt" do
+        pending "This should be active in plugin form"
         lambda do 
           @session._authentication_manager.fetch_user
         end.should raise_error(Authentication::NotImplemented)

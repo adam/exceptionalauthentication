@@ -84,6 +84,7 @@ module Authentication
     # allows for manually setting the user
     # @returns [User, NilClass]
     def user=(user)
+      session[:user] = nil && return if user.nil?
       session[:user] = store_user(user)
       @user = session[:user] ? user : session[:user]  
     end
@@ -133,21 +134,17 @@ module Authentication
     def self.included(base)
       base.send(:include, InstanceMethods)
       base.send(:extend,  ClassMethods)
-      base.class_eval do
-        include Extlib::Hook
-        attr_accessor :_authentication_manager
-        
-        after_class_method :new do |instance, *args|
-          instance._authentication_manager = Authentication::Manager.new(instance)
-        end
-      end
-      
     end
     
     module ClassMethods    
     end # ClassMethods
     
     module InstanceMethods
+      
+      def _authentication_manager
+        @_authentication_manager ||= Authentication::Manager.new(self)
+      end
+      
       def authenticated?
         _authentication_manager.authenticated?
       end

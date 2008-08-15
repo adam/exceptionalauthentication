@@ -13,13 +13,21 @@ class Exceptions < Application
   end
 
   def unauthorized
-    redirect url(:login)
+    unauthenticated
   end
 
   # login page
   def unauthenticated
+    provides :xml
     session.abandon!
-    display({}) # display the form for html... report that the user isn't logged in otherwise
+    case content_type
+    when :xml
+      basic_authentication.request
+    when :html 
+      render
+    else
+      display({}) # display the form for html... report that the user isn't logged in otherwise
+    end
   end
 
   def not_acceptable

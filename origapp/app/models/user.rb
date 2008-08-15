@@ -16,9 +16,19 @@ class User
   validates_is_confirmed :password
   
   before :save, :encrypt_password
+  
+  def active?
+    !!self.active
+  end
 
   def self.encrypt(salt, password = nil)
     Digest::SHA1.hexdigest("--#{salt}--#{password}--")
+  end
+  
+  def self.authenticate(login, password)
+    u = self.first(:login => login)
+    return nil unless u
+    u.crypted_password == encrypt(u.salt, password) ? u : nil
   end
   
   def encrypt_password

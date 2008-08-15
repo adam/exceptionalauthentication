@@ -13,7 +13,8 @@ class Sessions < Application
     raise Unauthenticated, "Thank you, come again - Apu Nahasapeemapetilon"
   end
 
-  def update(login, password)
+  def update
+    session.abandon!
     session.authenticate(self)
     "Add an after filter to do stuff after login"
   end

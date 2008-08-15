@@ -3,7 +3,7 @@ require File.join(File.dirname(__FILE__), "..", 'spec_helper.rb')
 describe Sessions do
   describe "routes" do
     it "should have a :login route" do
-      request_to(url(:login)).should route_to(Sessions, :edit)
+      request_to(url(:login)).should route_to(Exceptions, :unauthenticated)
     end
     
     it "should have a :logout route" do
