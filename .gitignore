@@ -6,6 +6,7 @@ public/graphics_images
 public/images/thumbnails
 public/previews
 public/system
+mauth-core/coverage
 tmp
 ._*
 .DS_Store

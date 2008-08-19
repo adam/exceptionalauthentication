@@ -2,8 +2,10 @@ require 'rubygems'
 require 'rake/gempackagetask'
 require 'rubygems/specification'
 require 'date'
+require "spec/rake/spectask"
 require 'merb-core/version'
 require 'merb-core/tasks/merb_rake_helper'
+
 
 NAME = "mauth-core"
 GEM_VERSION = "0.0.1"
@@ -45,6 +47,16 @@ task :make_spec do
     file.puts spec.to_ruby
   end
 end
+
+desc "Run all specs"
+Spec::Rake::SpecTask.new("specs") do |t|
+  t.spec_opts = ["--format", "specdoc", "--colour"]
+  t.spec_files = Dir["spec/**/*_spec.rb"].sort
+  t.rcov = true
+  t.rcov_opts << '--sort' << 'coverage' << '--sort-reverse'
+  t.rcov_opts << '--only-uncovered'
+end
+
 
 namespace :jruby do
 
