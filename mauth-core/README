@@ -1,0 +1,4 @@
+mauth-core
+==========
+
+A plugin for the Merb framework that provides an authentication framework for merb
