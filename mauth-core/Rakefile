@@ -5,11 +5,12 @@ require 'date'
 require "spec/rake/spectask"
 require 'merb-core/version'
 require 'merb-core/tasks/merb_rake_helper'
+require 'rake/testtask'
 
 
 NAME = "mauth-core"
 GEM_VERSION = "0.0.1"
-AUTHOR = "Adam French"
+AUTHOR = "Adam French, Daniel Neighman"
 EMAIL = "adam@wieck.com"
 HOMEPAGE = "http://merbivore.com/"
 SUMMARY = "Merb plugin that provides an authentication framework for merb"

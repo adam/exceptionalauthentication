@@ -1,5 +1,6 @@
 # make sure we're running inside Merb
 if defined?(Merb::Plugins)
+  require 'extlib'
 
   # Merb gives you a Merb::Plugins.config hash...feel free to put your stuff in your piece of it
   Merb::Plugins.config[:mauth_core] = {
@@ -8,9 +9,11 @@ if defined?(Merb::Plugins)
   
   Merb::BootLoader.before_app_loads do
     # require code that must be loaded before the application
+    require 'mauth-core/strategy_container'
+    require 'mauth-core/authenticated_manager'
     require 'mauth-core/authenticated_session'
     require 'mauth-core/authenticated_helper'
-    require 'mauth-core/application'
+    Merb::Controller.send(:include, Merb::AuthenticatedHelper)
   end
   
   Merb::BootLoader.after_app_loads do
@@ -18,4 +21,18 @@ if defined?(Merb::Plugins)
   end
   
   Merb::Plugins.add_rakefiles "mauth-core/merbtasks"
+  
+  # injecting Merb::DataMapperSession with authentication extensions
+  class Merb::BootLoader::AuthenticatedSessions < Merb::BootLoader
+    after MixinSessionContainer
+
+    def self.run
+      # Very kludgy way to get at the sessions object in include the new stuff
+      Merb.logger.info "Mixing in Authentication Session into the session object"
+      controller = Application.new(Merb::Request.new({}))
+      controller.setup_session
+      controller.session.class.send(:include,  Authentication::Session)    
+    end
+
+  end
 end
