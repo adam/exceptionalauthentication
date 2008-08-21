@@ -40,6 +40,19 @@ class User
   end
 end
 
+class Users < Application
+  def index
+    "You Made It!"
+  end
+end
+
+class Dingbats < Application
+  skip_before :ensure_authenticated
+  def index
+    "You Made It!"
+  end
+end
+
 module Authentication
   class Manager
     def fetch_user(id = 24)

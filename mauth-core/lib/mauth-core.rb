@@ -1,11 +1,6 @@
 # make sure we're running inside Merb
 if defined?(Merb::Plugins)
   require 'extlib'
-
-  # Merb gives you a Merb::Plugins.config hash...feel free to put your stuff in your piece of it
-  Merb::Plugins.config[:mauth_core] = {
-    :chickens => false
-  }
   
   Merb::BootLoader.before_app_loads do
     # require code that must be loaded before the application
@@ -14,6 +9,7 @@ if defined?(Merb::Plugins)
     require 'mauth-core/authenticated_session'
     require 'mauth-core/authenticated_helper'
     Merb::Controller.send(:include, Merb::AuthenticatedHelper)
+    Merb::Controller.before :ensure_authenticated
   end
   
   Merb::BootLoader.after_app_loads do
