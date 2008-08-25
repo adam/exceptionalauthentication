@@ -45,9 +45,9 @@ h3. How Does It Authenticate my arbitrary user?
 
 You set it up to authenticate it.  Here's an example:
 
-<code> Authentication.login_strategies.add(:password_login_from_form) do
+<pre><code> Authentication.login_strategies.add(:password_login_from_form) do
   User.authenticate(params[:login], params[:password])
-end </code>
+end </code></pre>
 
 The login strategy is executed in the context of the controller so all
 methods, and objects of the controller are there ready to use as part of the
@@ -60,11 +60,11 @@ You can add as many strategies as you like and they will be tried one after
 another until either one is found that works (login), or none of them have
 passed (failed attempt).
 
-<code> Authentication.login_strategies.add(:password_login_basic_auth) do
+<pre><code> Authentication.login_strategies.add(:password_login_basic_auth) do
   basic_authentication.authenticate do |login, password|
     User.authenticate(login, password)
   end
-end </code>
+end </code></pre>
 
 Now that we have two, they will be executed in the order that they're called
 when we call <code>session.authenticate(self)</code>.  The first one that
@@ -101,6 +101,7 @@ class Authentication::Manager
 To configure your user object to go in and out of the session, here's how you
 could do it.
 
+<pre><code>
 class Authentication::Manager
 
   # return the value you want stored in the session def store_user(user)
@@ -112,6 +113,7 @@ class Authentication::Manager
     User.get(session_info)
   end
 end
+</code></pre>
 
 h3. Additional checks / actions to perform after the user is found
 

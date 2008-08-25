@@ -97,11 +97,13 @@ Merb::Plugins.config[:merb_slices] = { :queue => ["MauthPasswordSlice", ...] }
 # Setup your application to use MauthPasswordSlice in an after_app_loads block
 # Note MPS is given as an alias for MauthPasswordSlice
 
+<pre><code>
 Merb::BootLoader.after_app_loads do
   MPS[:user_class] = User # Set your user class here 
   MPS[:login_field] = {:label => "Login",    :method => :login} 
   MPS[:password_field] = {:label => "Password", :method => :password} 
 end
+</code></pre>
 
 These are used to setup the login and password fields and the labels that are
 shown.  The defaults are shown
