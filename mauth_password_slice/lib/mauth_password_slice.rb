@@ -69,8 +69,9 @@ if defined?(Merb::Plugins)
     def self.setup_router(scope)
       # example of a named route
       # scope.match('/index.:format').to(:controller => 'main', :action => 'index').name(:mauth_password_slice_index)
-      scope.match("/login", :method => :put).to(:controller => "sessions", :action => "update").name(:mauth_perform_login)
-      scope.match("/logout").to(:controller => "sessions", :action => "destroy").name(:logout)
+      scope..match("/login", :method => :put).to(:controller => "sessions", :action => "update").name(:mauth_perform_login)
+      # scope.parent.match("/login", :method => :get).to(:controller => "exceptions", :action => "unauthenticated")
+      # scope.parent.match("/logout").to(:controller => "sessions", :action => "destroy").name(:logout)
     end
     
   end
