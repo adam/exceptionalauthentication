@@ -25,6 +25,7 @@ Merb::Router.prepare do |r|
   # r.resources :posts
   
   r.match("/").to(:controller => "welcome", :action => "index")
+  
   r.match("/login", :method => :get).to(:controller => "exceptions", :action => "unauthenticated")
   r.slice(:MauthPasswordSlice, :path => "", :default_routes => false)
 

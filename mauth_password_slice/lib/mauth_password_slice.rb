@@ -70,6 +70,7 @@ if defined?(Merb::Plugins)
       # example of a named route
       # scope.match('/index.:format').to(:controller => 'main', :action => 'index').name(:mauth_password_slice_index)
       scope.match("/login", :method => :put).to(:controller => "sessions", :action => "update").name(:mauth_perform_login)
+      scope.match("/logout").to(:controller => "sessions", :action => "destroy").name(:logout)
     end
     
   end

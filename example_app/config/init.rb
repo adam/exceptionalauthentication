@@ -115,7 +115,7 @@ end
 Merb::BootLoader.after_app_loads do
   DataMapper.auto_migrate!
   User.create(:login => "admin", :password => "password", :password_confirmation => "password", :email => "admin@example.com")
-  MPS[:user_class] = User
+  MauthPasswordSlice[:user_class] = User
 end
 
 

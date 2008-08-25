@@ -1,7 +1,7 @@
 class Application < Merb::Controller; end
 
 class Exceptions < Application
-  
+  skip_before :ensure_authentication
   
   # This stuff allows us to provide a default view
   the_view_path = File.expand_path(File.dirname(__FILE__) / ".." / "views")
