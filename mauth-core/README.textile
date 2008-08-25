@@ -104,7 +104,8 @@ could do it.
 <pre><code>
 class Authentication::Manager
 
-  # return the value you want stored in the session def store_user(user)
+  # return the value you want stored in the session 
+  def store_user(user)
     return nil unless user user.id
   end
 
@@ -123,10 +124,12 @@ Authentication::Manager implements Extlib::Hook so you can just setup hooks to
 deal with this.
 
 Here's an example of checking that a user object is active after it's been
-found: <code> after :authenticate do |instance, *args|
+found: 
+
+<pre><code> after :authenticate do |instance, *args|
   raise Merb::Controller::Unauthenticated, "User Not Active" unless
   instance.active?
-end </code>
+end </code></pre>
 
 Notice that to fail the check we raised an Unauthenticated exception.  The
 session is available in that block as <code>session</code>
