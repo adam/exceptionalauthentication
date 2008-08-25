@@ -128,8 +128,7 @@ Here's an example of checking that a user object is active after it's been
 found: 
 
 <pre><code> after :authenticate do |instance, *args|
-  raise Merb::Controller::Unauthenticated, "User Not Active" unless
-  instance.active?
+  raise Merb::Controller::Unauthenticated, "User Not Active" unless instance.active?
 end </code></pre>
 
 Notice that to fail the check we raised an Unauthenticated exception.  The
