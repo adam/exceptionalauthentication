@@ -106,7 +106,8 @@ class Authentication::Manager
 
   # return the value you want stored in the session 
   def store_user(user)
-    return nil unless user user.id
+    return nil unless user 
+    user.id
   end
 
   # session info is the data you stored in the session previously def
