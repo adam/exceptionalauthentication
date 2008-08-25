@@ -12,18 +12,18 @@ is for directing traffic.  Instead, the session is used as the place for
 authentication, with a sprinkling of controller helpers.  For example, inside
 you controller:
 
-# session.authenticated?  
+* session.authenticated?  
   returns true if the session has been
   authenticated.  False otherwise # session.authenticate(controller)
   authenticates the session based on customizable user defined rules 
 
-# session.user                      
+* session.user                      
   returns the currently authenticated user object 
 
-# session.user= 
+* session.user= 
   manually sets the currently authenticated user object 
 
-# session.abandon!                  
+* session.abandon!                  
 sets the session to unauthenticated, and clears all session data
 
 Mauth makes use of Merb's exception handling facilities which return correct
