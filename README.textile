@@ -1,3 +1,10 @@
+h1. Moved to MerbAuth
+
+Development has moved to Daniel Neighman's MerbAuth repo here on github.
+
+"http://github.com/hassox/merb-auth/tree/master":http://github.com/hassox/merb-auth/
+
+
 h1. Exceptional Authentication
 
 h2. An extensible architecture for authentication using Merb and DataMapper
